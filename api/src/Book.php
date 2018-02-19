@@ -38,86 +38,93 @@ class Book
   public function setDescription($description)
   {$this->description = $description;}
 
-// 
-//   public function saveToDB(mysqli $conn)
-//   {
-//     if($this->id == -1)
-//     {
-//       $sql = "INSERT INTO Tweet (userId, text, creationDate) VALUES ('$this->userId', '$this->text', '$this->creationDate')";
-//
-//       $result = $conn->query($sql);
-//       if ($result==true)
-//       {
-//         $this->id = $conn->insert_id;
-//         return true;
-//       }
-//     }
-//     echo "Błąd " . $conn->error;
-//     return false;
-//   }
-//
-//
-//   static public function loadTweetById (mysqli $conn, $id)
-//   {
-//     $sql = "SELECT * FROM Tweet WHERE id = $id";
-//     $result = $conn->query($sql);
-//     if ($result==true && $result->num_rows == 1)
-//     {
-//       $row = $result->fetch_assoc();
-//       $tweet = new Tweet();
-//       $tweet->id = $row['id'];
-//       $tweet->setText($row['text']);
-//       $tweet->setUserId($row['userId']);
-//       $tweet->setCreationDate($row['creationDate']);
-//       return $tweet;
-//     }
-//     return null;
-//   }
-//
-//
-//   static public function loadAllTweetsByUserId(mysqli $conn, $userId)
-//   {
-//     $userTweets = [];
-//     $sql = "SELECT * FROM Tweet WHERE userId = $userId ORDER BY creationDate DESC";
-//     $result = $conn->query($sql);
-//
-//     if ($result==true && $result->num_rows != 0)
-//     {
-//       foreach ($result as $row)
-//       {
-//         $tweet= new Tweet();
-//         $tweet->id = $row['id'];
-//         $tweet->setText($row['text']);
-//         $tweet->setUserId($row['userId']);
-//         $tweet->setCreationDate($row['creationDate']);
-//
-//         $userTweets[] = $tweet;
-//       }
-//     }
-//     return $userTweets;
-//   }
-//
-//
-//   static public function loadAllTweets(mysqli $conn)
-//   {
-//     $sql = "SELECT * FROM Tweet ORDER BY creationDate DESC";
-//     $result = $conn->query($sql);
-//     $allTweets = [];
-//
-//     if ($result ==  true && $result->num_rows != 0)
-//     {
-//       foreach ($result as $row)
-//       {
-//         $tweet = new Tweet();
-//         $tweet->id = $row['id'];
-//         $tweet->userId = $row['userId'];
-//         $tweet->text = $row['text'];
-//         $tweet->creationDate = $row['creationDate'];
-//         $allTweets[] = $tweet;
-//       }
-//     }
-//     return $allTweets;
-//   }
-// }
+
+  static public function loadFromDB (mysqli $conn, $id)
+  {
+    $sql = "SELECT * FROM Book WHERE id = $id";
+    $result = $conn->query($sql);
+    if ($result==true && $result->num_rows == 1)
+    {
+      $row = $result->fetch_assoc();
+      $book = new Book();
+      $book->id = $row['id'];
+      $book->setName($row['name']);
+      $book->setAuthor($row['author']);
+      $book->setDescription($row['description']);
+      return $book;
+    }
+    return null;
+  }
+
+  public function create(mysqli $conn)//bez name i author bo tak jest lepiej
+  {
+    if($this->id == -1)
+    {
+      $sql = "INSERT INTO Book (name, author, description) VALUES ('$this->name', '$this->author', '$this->description')";
+
+      $result = $conn->query($sql);
+      if ($result==true)
+      {
+        $this->id = $conn->insert_id;
+        return true;
+      }
+    }
+    echo "Błąd " . $conn->error;
+    return false;
+  }
+
+  public function update(mysqli $conn)
+  {
+    if($this->id != -1)
+    {
+      $sql = "UPDATE `Book`
+              SET `name`='$this->name',
+                  `author`='$this->author',
+                  `description`='$this->description'
+              WHERE `id`='$this->id'";
+
+      $result=$conn->query($sql);
+      if($result==true)
+      {
+        return true;
+      }
+      echo "Błąd podczas update'u książki o id $id: " . $conn->error;
+      return false;
+    }
+    echo "Tej książki jeszcze nie ma w bazie, zatosuj funkcję create";
+    return false;
+  }
+
+  public function deleteFromDB(mysqli $conn)
+  {
+    if ($this->id != -1)
+    {
+      $sql = "DELETE FROM `Book` WHERE `id`='$this->id'";
+      $result=$conn->query($sql);
+      if($result==true)
+      {
+        $this->id = -1;
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  static public function staticDeleteFromDB(mysqli $conn, $id)
+  {
+    if ($id != -1)
+    {
+      $sql = "DELETE FROM `Book` WHERE `id`= $id";
+      $result=$conn->query($sql);
+      if($result==true)
+      {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+}
 
 ?>

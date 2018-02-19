@@ -11,6 +11,6 @@ if($conn->connect_error)
 {
   die("Błąd ". $conn->connect_error);
 }
-echo "Połacznie udane";
+//echo "Połacznie udane";
 
 ?>
