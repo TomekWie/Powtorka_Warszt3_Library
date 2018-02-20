@@ -2,7 +2,7 @@
 
 require __DIR__ . "/conn.php";
 
-class Book
+class Book implements JsonSerializable
 {
   private $id;
   private $name;
@@ -15,6 +15,17 @@ class Book
     $this->name = '';
     $this->author = '';
     $this->description = '';
+  }
+
+  public function jsonSerialize()
+  {
+    return
+    [
+    'id' => $this->id,
+    'name' => $this->name,
+    'author' => $this->author,
+    'description' => $this->description
+    ];
   }
 
   public function getId()
@@ -55,6 +66,27 @@ class Book
     }
     return null;
   }
+
+  static public function loadAllFromDB (mysqli $conn)
+  {
+    $sql = "SELECT * FROM Book";
+    $result = $conn->query($sql);
+    if ($result==true && $result->num_rows >= 1)
+    {
+      $booksArr = [];
+      foreach ($result as $row) {
+        $book = new Book();
+        $book->id = $row['id'];
+        $book->setName($row['name']);
+        $book->setAuthor($row['author']);
+        $book->setDescription($row['description']);
+        $booksArr[] = $book;
+      }
+      return $booksArr;
+    }
+    return null;
+  }
+
 
   public function create(mysqli $conn)//bez name i author bo tak jest lepiej
   {
