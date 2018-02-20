@@ -8,7 +8,7 @@ if($_SERVER["REQUEST_METHOD"]=="GET")
   $booksArr = Book::loadAllFromDB($conn);
 
   $serializedBooksArr =  json_encode($booksArr);
-  echo $serializedBooksArr;
+  echo $serializedBooksArr;//ajax wyłapuje tylko to co się wyświetla na stronie
 
   //Stosuję powyższe rozwiązanie zamiast poniższego które serializowalo by poszczególne obiekty
   // foreach ($booksArr as $book)

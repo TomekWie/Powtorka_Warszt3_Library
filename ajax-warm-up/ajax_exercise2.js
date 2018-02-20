@@ -9,7 +9,7 @@ $(function()
 {
   $.ajax
   ({
-    url:"http://localhost/Powtorka_Warszt3_Library_REST_AJAX/ajax_exercise2.php",
+    url:"http://localhost/Powtorka_Warszt3_Library/ajax_exercise2.php",
     dataType: "JSON"// bez tego nie pójdzie!
   })
     .done(function(response)//response jak event w callbacku
