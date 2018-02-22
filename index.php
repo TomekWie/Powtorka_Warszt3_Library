@@ -11,6 +11,16 @@
 
 <body>
 
+  <form id="mainForm" action="api/books.php" method="POST">
+    <h3>Dodaj książkę do bazy!</h3>
+    <input id="inputName" name="name" placeholder="tytuł książki" required>
+    <input id="inputAuthor" name="author" placeholder="autor" required>
+    <input id="inputDescription" name="description" placeholder="opis książki" required>
+    <input value="submit" type="submit">
+  </form>
+
+  <div id="booksList">
+  </div>
 
 </body>
 

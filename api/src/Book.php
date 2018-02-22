@@ -88,11 +88,11 @@ class Book implements JsonSerializable
   }
 
 
-  public function create(mysqli $conn)//bez name i author bo tak jest lepiej
+  public function create(mysqli $conn, $name, $author, $description)
   {
     if($this->id == -1)
     {
-      $sql = "INSERT INTO Book (name, author, description) VALUES ('$this->name', '$this->author', '$this->description')";
+      $sql = "INSERT INTO Book (name, author, description) VALUES ('$name', '$author', '$description')";
 
       $result = $conn->query($sql);
       if ($result==true)
