@@ -5,16 +5,20 @@ require __DIR__ . "/src/Book.php";
 
 if($_SERVER["REQUEST_METHOD"]=="GET")
 {
-  $booksArr = Book::loadAllFromDB($conn);
-
-  $serializedBooksArr =  json_encode($booksArr);
-  echo $serializedBooksArr;//ajax wyłapuje tylko to co się wyświetla na stronie
-
-  //Stosuję powyższe rozwiązanie zamiast poniższego które serializowalo by poszczególne obiekty
-  // foreach ($booksArr as $book)
-  // {
-  //   $serializedBook = json_encode($book);
-  //   echo $serializedBook . "<br>";
-  // }
+  if(isset($_GET['id']))
+  {
+     $id = $_GET['id'];
+     $book = Book::loadFromDB($conn, $id);
+     $serializedBook = json_encode($book);
+     //var_dump($serializedBook);//gdyby ten var_dump nie był zakomentowany to ajax rzucał by błedem parseerror
+     echo $serializedBook;//ajax wyłapuje tylko to co się wyświetla na stronie
+     //echo $book->getName();
+  }
+  else
+  {
+    $booksArr = Book::loadAllFromDB($conn);
+    $serializedBooksArr =  json_encode($booksArr);
+    echo $serializedBooksArr;//ajax wyłapuje tylko to co się wyświetla na stronie
+  }
 }
 ?>
