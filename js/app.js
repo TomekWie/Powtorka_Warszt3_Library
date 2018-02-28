@@ -27,12 +27,16 @@ $(function()
     {
       var id = book.id;
       var name = book.name;
-      var div = $("<div class='name' data-id="+id+">" + name + "<div class='info'></div></div>");
-      var button = $("<button data-id="+id+">usuń</button>");
+      var author = book.author;
+      var description = book.description;
 
-      booksDiv.append(div);
-      div.click(showInfo);
-      div.after(button);
+      var bookDiv = $("<div class='name' data-id="+id+">" + name + "</div>");
+      var button = $("<button data-id="+id+">usuń tę książkę</button><br><br><hr>");
+
+      booksDiv.append(bookDiv);
+      bookDiv.after(button);
+
+      bookDiv.click(showInfo);
       button.click(deleteBook);
     }
   }
@@ -42,7 +46,7 @@ $(function()
   function deleteBook()
   {
     var id = this.dataset.id;
-    
+
     $.ajax
     ({
       url: "http://localhost/Powtorka_Warszt3_Library/api/books.php?id="+id,
@@ -62,22 +66,44 @@ $(function()
 
   function showInfo()
   {
-    var id = this.dataset.id;
-
-    $.ajax
-    ({
-      url:"http://localhost/Powtorka_Warszt3_Library/api/books.php?id="+id+"",
-      type: "GET",
-      dataType: "JSON"
-    })
-    .done(function(response)
+    if ($(this).attr("data-info"))
     {
-      var author = response.author;
-      var description = response.description;
-      var infoDiv = $("div[data-id="+id+"]").find("div.info");
-      infoDiv.text("autor: "+ author +" opis: "+ description);
-    })
-    .fail(function(jqXHR, textStatus) {alert("Request failed: " + textStatus);});
+      $(this).find(".info").toggleClass("hidden");
+    }
+    else
+    {
+      var id = this.dataset.id;
+      $(this).attr("data-info","true");
+
+      $.ajax
+      ({
+        url:"http://localhost/Powtorka_Warszt3_Library/api/books.php?id="+id+"",
+        type: "GET",
+        dataType: "JSON"
+      })
+      .done(function(response)
+      {
+        var name = response.name;
+        var author = response.author;
+        var description = response.description;
+
+        var infoDiv = $("<div class='info'> <strong> Autor: </strong> "+author+" <strong> Opis:</strong> "+description+" </div>");
+
+        var modifyBookForm =
+        $("<form data-id='"+id+"' data-name='"+name+"'data-author='"+author+"' data-description='"+description+"'><br> Zmień dane tej książki<br>"+
+        "<input name='name' placeholder='nowy tytuł'><br>"+
+        "<input name='author' placeholder='nowy autor'><br>"+
+        "<input name='description' placeholder='nowy opis książki'><br>"+
+        "<input value='zmień' type='submit'>"+
+        "</form>");
+
+        $("div[data-id="+id+"]").append(infoDiv);
+        infoDiv.append(modifyBookForm);
+        modifyBookForm.on("click", modifyBook);
+
+      })
+      .fail(function(jqXHR, textStatus) {alert("Request failed: " + textStatus);});
+    }
   }
 
   //addingBookByForm-----------------------------------------------------------------
@@ -88,10 +114,10 @@ $(function()
 
     $.ajax
     ({
-    url:  mainForm.attr("action"),
-    type: "POST",
-    data: mainForm.serialize(),
-    dataType: "JSON"
+      url:  mainForm.attr("action"),
+      type: "POST",
+      data: mainForm.serialize(),
+      dataType: "JSON"
     })
     .done(function(response)
     {
@@ -100,4 +126,36 @@ $(function()
       allBooks(response);
     });
   });
+
+  //modifyBookByForm-------------------------------------------------------------
+
+  function modifyBook(event)
+  {
+    event.stopImmediatePropagation();
+
+    $(this).on("submit", function(event)
+    {
+      event.preventDefault();
+      var id = this.dataset.id;
+      var name = this.dataset.name;
+      var author = this.dataset.author;
+      var description = this.dataset.description;
+      var smallForm = $("form[data-id="+id+"]");
+
+      $.ajax
+      ({
+        url:"http://localhost/Powtorka_Warszt3_Library/api/books.php?id="+id+"&name="+name+"&author="+author+"&description="+description+"",
+        type: "PUT",
+        data: smallForm.serialize(),
+        dataType: "JSON"
+      })
+      .done(function(response)
+      {
+        booksDiv.empty();
+        mainForm[0].reset();
+        allBooks(response);
+      })
+      .fail(function(jqXHR, textStatus) {alert("Request failed: " + textStatus);});
+    });
+  }
 });

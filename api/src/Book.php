@@ -127,6 +127,29 @@ class Book implements JsonSerializable
     return false;
   }
 
+
+  static public function staticUpdate(mysqli $conn, $id, $name, $author, $description)
+  {
+    if($id != -1)
+    {
+      $sql = "UPDATE `Book`
+              SET `name`='$name',
+                  `author`='$author',
+                  `description`='$description'
+              WHERE `id`='$id'";
+
+      $result=$conn->query($sql);
+      if($result==true)
+      {
+        return true;
+      }
+      echo "Błąd podczas update'u książki o id $id: " . $conn->error;
+      return false;
+    }
+    echo "Tej książki jeszcze nie ma w bazie, zatosuj funkcję create";
+    return false;
+  }
+
   public function deleteFromDB(mysqli $conn)
   {
     if ($this->id != -1)
